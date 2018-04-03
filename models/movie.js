@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
 const movieSchema = mongoose.Schema({
     title:{
         type: String,
@@ -15,5 +15,15 @@ const movieSchema = mongoose.Schema({
         type: Date,
         default: Date.now()
     }
-});
-module.exports = mongoose.model('Movie', movieSchema);
+})
+const Movie = mongoose.model('Movie',movieSchema)
+
+// const Moviev = new Movie({ 
+//     title: '12344',
+//     image: 'imgs',
+//     rating:'ratings',
+//     introduction: 'introductions' 
+// })
+// Moviev.save().then(() => console.log('meow'))
+
+module.exports = Movie

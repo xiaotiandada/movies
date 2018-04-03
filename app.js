@@ -1,12 +1,15 @@
 const express = require('express')
-const mongoose = require('mongoose')
 
 const index = require('./router/index')
 const movie = require('./router/movie')
 
-
-mongoose.connect('mongodb://localhost:27017/movie')
+const mongoose = require('mongoose')
+mongoose.connect('mongodb://localhost:27017/movie');
 const app = express()
+
+app.use('/',index)
+app.use('/api',movie)
+
 // app.use('/',(req, res)=>{
 //     res.send('ok')
 // })
@@ -15,5 +18,3 @@ app.listen(3000,() => {
 })
 
 
-app.use('/',index)
-app.use('/api',movie)
