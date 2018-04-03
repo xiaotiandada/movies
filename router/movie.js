@@ -21,7 +21,7 @@ router.post('/movie', (req, res)=>{
         }
     })
 });
-//获取详情
+// 获取详情
 // router.get('/movie/:id', (req, res)=>{
 //     // console.log(req.params);
 //     Movie.find({"_id": ObjectId(req.params.id)}).then(movie =>{

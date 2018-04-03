@@ -10,10 +10,11 @@ import toastr from 'toastr'
 import 'toastr/build/toastr.min.css'
 import Vodal from 'vodal'
 import "vodal/common.css"
-import "vodal/rotate.css"
+import "vodal/zoom.css"
 Vue.config.productionTip = false
 Vue.use(MuseUI)
 Vue.prototype.$http = axios
+Vue.prototype.toastr = toastr
 Vue.component(Vodal.name, Vodal)
 
 toastr.options = {

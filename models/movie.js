@@ -16,7 +16,6 @@ const movieSchema = mongoose.Schema({
         default: Date.now()
     }
 })
-const Movie = mongoose.model('Movie',movieSchema)
 
 // const Moviev = new Movie({ 
 //     title: '12344',
@@ -26,4 +25,4 @@ const Movie = mongoose.model('Movie',movieSchema)
 // })
 // Moviev.save().then(() => console.log('meow'))
 
-module.exports = Movie
+module.exports =  mongoose.model('Movie',movieSchema)

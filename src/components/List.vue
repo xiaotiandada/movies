@@ -27,22 +27,22 @@
           <mu-td>
             <mu-raised-button @click="showDetail(movie.title)" label="详细" class="demo-raised-button" primary/>
             <mu-raised-button @click="openEditMovieModel(movie)" label="修改" class="demo-raised-button" primary/>
-            <mu-raised-button label="删除" class="demo-raised-button" Secondary/>
+            <mu-raised-button @click="removeMovie(movie)" label="删除" class="demo-raised-button" Secondary/>
           </mu-td>
         </mu-tr>
       </mu-tbody>
     </mu-table>
   
     <!-- 添加 -->
-    <mu-float-button icon="+" backgroundColor class="demo-float-button" />
+    <mu-float-button icon="+" backgroundColor class="demo-float-button" @click="openAddMovieModel" />
     <!-- 添加电影表单 -->
     <vodal :show="addMovieModal" animation="zoom" :width="500" :height="480" :closeButton="true">
       <mu-text-field v-model="title" label="电影名称" labelFloat fullWidth />
       <mu-text-field v-model="image" label="海报地址" labelFloat fullWidth />
       <mu-text-field v-model="rating" label="简介" labelFloat fullWidth :rows="2" :rowsMax="4" multiLine />
       <mu-text-field v-model="introduction" label="评分" labelFloat fullWidth />
-      <mu-raised-button label="取消" />
-      <mu-raised-button label="确定" primary/>
+      <mu-raised-button @click="closeModel" label="取消" />
+      <mu-raised-button @click="addMovie" label="确定" primary/>
     </vodal>
     <!-- 修改电影表单 -->
     <vodal :show="editMovieModal" animation="zoom" :width="500" :height="480" :closeButton="true">
@@ -50,8 +50,8 @@
       <mu-text-field v-model="image" label="海报地址" labelFloat fullWidth />
       <mu-text-field v-model="rating" label="简介" labelFloat fullWidth :rows="2" :rowsMax="4" multiLine />
       <mu-text-field v-model="introduction" label="评分" labelFloat fullWidth />
-      <mu-raised-button label="取消" />
-      <mu-raised-button label="确定" primary/>
+      <mu-raised-button @click="closeModel" label="取消" />
+      <mu-raised-button @click="editMovie" label="确定" primary/>
     </vodal>
   </div>
 </template>
@@ -68,29 +68,90 @@
         image: '',
         rating: null,
         introduction: '',
+        movie_id: '',
         movies: [],
         addMovieModal: false,
         editMovieModal: false
       }
     },
     methods: {
-      unselect() {
-        this.$refs.table.unSelectAll()
-      },
       // 獲取所有電影的方法
       getMovies() {
-        this.$http.get('/api/movie')
-          .then(res => {
-            console.dir(res.data)
-            this.movies = res.data
-          })
-          .catch(err => {
-            this.toastr.error(`${err.message}`, 'ERROR!')
-            console.log(err)
-          })
+      this.$http.get('/api/movie').then(res => {
+          this.movies = res.data;
+          console.log(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        })
+    },
+      // 打開添加電影model方法
+      openAddMovieModel(){
+        this.addMovieModal = true
+      },
+      // 打開編輯電影model方法
+      openEditMovieModel(movie){
+        this.editMovieModal = true
+        this.title = movie.title
+        this.image = movie.image
+        this.introduction = movie.introduction
+        this.rating = movie.rating
+        this.movie_id = movie._id
+      },
+      // 訪問後端添加電影的方法
+      addMovie(){
+        this.$http.post('/api/movie',{
+          title: this.title,
+          image: this.image,
+          introduction: this.introduction,
+          rating: this.rating
+        }).then(res=>{
+          this.addMovieModal = false
+          this.getMovies()
+        })
+      },
+      // 編輯
+      editMovie(){
+        this.editMovieModal = false
+        let id = this.movie_id
+        this.$http.put(`/api/movie/${id}`,{
+          title: this.title,
+          image: this.image,
+          introduction: this.introduction,
+          rating: this.rating
+        }).then(res=>{
+          this.toastr.success('修改电影成功');
+          this.editMovieModal =false
+          this.title = ''
+          this.image = ''
+          this.introduction = ''
+          this.rating = null
+          this.movie_id = ''
+          this.getMovies()
+        })
       },
       showDetail(title) {
-        this.$route.push(`/movie/${title}`)
+        this.$router.push(`/movie/${title}`);
+      },
+      // 刪除
+      removeMovie(movie){
+        let id = movie._id
+        // console.log(id)
+        this.$http.delete(`/api/movie/${id}`).then(res=>{
+          this.toastr.success('删除成功')
+          // console.log(res.data)
+          this.getMovies()
+        })
+      },
+      // 取消
+      closeModel(){
+        this.addMovieModal = false
+        this.editMovieModal = false
+        this.title = ''
+        this.image = ''
+        this.introduction = ''
+        this.rating = ''
+        this.movie_id = ''
       }
     }
   }
