@@ -9,7 +9,7 @@
         <mu-th>操作</mu-th>
       </mu-thead>
       <mu-tbody>
-        <mu-tr v-for="movie of movies">
+        <mu-tr v-for="(movie, index) of movies" :key="index">
           <mu-td>
             <img :src="movie.image" class="posterImg">
           </mu-td>
@@ -18,8 +18,8 @@
           </mu-td>
           <mu-td>
             <span class="movie-introduction">
-                {{movie.introduction}}
-              </span>
+                  {{movie.introduction}}
+                </span>
           </mu-td>
           <mu-td>
             {{movie.rating}}
@@ -77,20 +77,25 @@
     methods: {
       // 獲取所有電影的方法
       getMovies() {
-      this.$http.get('/api/movie').then(res => {
-          this.movies = res.data;
-          console.log(res.data);
-        })
-        .catch(err => {
-          console.log(err);
-        })
-    },
+        this.$http.get('/api/movie').then(res => {
+            this.movies = res.data;
+            console.log(res.data);
+          })
+          .catch(err => {
+            console.log(err);
+          })
+      },
       // 打開添加電影model方法
-      openAddMovieModel(){
+      openAddMovieModel() {
+        this.title = ''
+        this.image = ''
+        this.introduction = ''
+        this.rating = null
+        this.movie_id = ''
         this.addMovieModal = true
       },
       // 打開編輯電影model方法
-      openEditMovieModel(movie){
+      openEditMovieModel(movie) {
         this.editMovieModal = true
         this.title = movie.title
         this.image = movie.image
@@ -99,29 +104,29 @@
         this.movie_id = movie._id
       },
       // 訪問後端添加電影的方法
-      addMovie(){
-        this.$http.post('/api/movie',{
+      addMovie() {
+        this.$http.post('/api/movie', {
           title: this.title,
           image: this.image,
           introduction: this.introduction,
           rating: this.rating
-        }).then(res=>{
+        }).then(res => {
           this.addMovieModal = false
           this.getMovies()
         })
       },
       // 編輯
-      editMovie(){
+      editMovie() {
         this.editMovieModal = false
         let id = this.movie_id
-        this.$http.put(`/api/movie/${id}`,{
+        this.$http.put(`/api/movie/${id}`, {
           title: this.title,
           image: this.image,
           introduction: this.introduction,
           rating: this.rating
-        }).then(res=>{
+        }).then(res => {
           this.toastr.success('修改电影成功');
-          this.editMovieModal =false
+          this.editMovieModal = false
           this.title = ''
           this.image = ''
           this.introduction = ''
@@ -134,17 +139,17 @@
         this.$router.push(`/movie/${title}`);
       },
       // 刪除
-      removeMovie(movie){
+      removeMovie(movie) {
         let id = movie._id
         // console.log(id)
-        this.$http.delete(`/api/movie/${id}`).then(res=>{
+        this.$http.delete(`/api/movie/${id}`).then(res => {
           this.toastr.success('删除成功')
           // console.log(res.data)
           this.getMovies()
         })
       },
       // 取消
-      closeModel(){
+      closeModel() {
         this.addMovieModal = false
         this.editMovieModal = false
         this.title = ''
@@ -169,9 +174,9 @@
   
   
   /* .movie-poster {
-      width: 80px;
-      padding: 4px 0;
-    } */
+        width: 80px;
+        padding: 4px 0;
+      } */
   
   .movie-introduction {
     white-space: normal;

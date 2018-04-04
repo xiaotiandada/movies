@@ -1,76 +1,77 @@
 <template lang="html">
-    <div>
-      <mu-circular-progress class="loading" v-if="loadingData" :size="80"/>
-      <div class="detail" v-else>
-        <div class="detail-left">
-          <img class="movie-poster"/>
-        </div>
-        <div class="detail-right">
-            <p class="movie-title">{{ movie.title }} <span>{{ movie.original_title}}</span></p>
-            <p class="movie-akas">别名:<span class="movie-aka" v-for="aka of movie.aka">{{aka}}</span></p>
-            <p class="movie-genres">
-              {{movie.countries.join('')}} ({{movie.year}})
-              <span  class="movie-genre" v-for="genre of movie.genres">{{genre}}</span>
-              评分: {{movie.rating.average}}
-            </p>
-            <p class="movie-directors">导演:<a :href="dir.alt" v-for="dir of movie.directors">{{dir.name}}</a></p>
-            <p class="movie-actors">
-              演员: <a v-for="actor of movie.casts" class="movie-actor" :href="actor.alt">{{actor.name}}</a>
-            </p>
-            <p class="movie-summary">{{movie.summary}}</p>
-            <mu-raised-button @click="goBack" primary>返回</mu-raised-button>
-        </div>
+  <div>
+    <mu-circular-progress class="loading" v-if="loadingData" :size="80" />
+    <div class="detail" v-else>
+      <div class="detail-left">
+        <img class="movie-poster" />
       </div>
+      <div class="detail-right">
+        <p class="movie-title">{{movie.title}} <span>{{movie.original_title}}</span></p>
+        <p class="movie-akas">别名:<span class="movie-aka" v-for="aka of movie.aka">{{aka}}</span></p>
+        <p class="movie-genres">
+          {{movie.countries.join('')}}({{movie.year}})
+          <span class="movie-genre" v-for="genre of movie.genres">{{genre}}</span>
+          评分: {{movie.rating.average}}
+        </p>
+        <p class="movie-directors">导演:<a :href="dir.alt" v-for="dir of movie.directors">{{dir.name}}</a></p>
+        <p class="movie-actors">
+          演员: <a class="movie-actor" :href="actor.alt" v-for="actor of movie.casts">{{actor.name}}</a>
+        </p>
+        <p class="movie-summary">{{movie.summary}}</p>
+        <mu-raised-button @click="goBack" primary>返回</mu-raised-button>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-export default {
-  created() {
-    this.getMovie(this.$route.params.title)
-    document.title = this.$route.name
-  },
-  data() {
-    return {
-      movie: {},
-      loadingData : true
-    }
-  },
-  methods: {
-    goBack() {
-      this.$router.go(-1)
+  export default {
+    created(){
+      this.getMovie(this.$route.params.title)
+      document.title = this.$route.name
     },
-    getMovie(title) {
-      // 由于自定的movie模型没有足够的数据,故用前端请求豆瓣的api
-      let searchUrl = 'https://bird.ioliu.cn/v1/?url=http://api.douban.com/v2/movie/search?q='
-      this.$http.get(`${searchUrl}${title}`)
-        .then(res => {
-            console.log(res.data)
-            let movieUrl = 'https://bird.ioliu.cn/v1/?url=http://api.douban.com/v2/movie/subject'
-            let movieId = res.data.subjects[0].id
-            if(!!movieId){
-              this.$http.get(`${movieUrl}/${movieId}`)
-              .then(res => {
-                console.dir(res.data)
-                if (!!res.data) {
-                  this.movie = res.data
-                  setTimeout(()=>{
-                    document.querySelector('.movie-poster').src = this.movie.images.large
-                  },0)
-                  this.loadingData = false
-                }
-              })
-              .catch(e => console.log(e))
-            }
+    data() {
+      return {
+        movie: {},
+        loadingData: true
+      }
+    },
+    methods: {
+      goBack(){
+        this.$router.go(-1)
+      },
+      getMovie(title){
+        // 由于自定的movie模型没有足够的数据,故用前端请求豆瓣的api
+        let searchUrl = 'https://bird.ioliu.cn/v1/?url=http://api.douban.com/v2/movie/search?q='
+        this.$http.get(`${searchUrl}${title}`).then(res=>{
+          // console.log(res.data)
+          let movieUrl = 'https://bird.ioliu.cn/v1/?url=http://api.douban.com/v2/movie/subject'
+          let movieId = res.data.subjects[0].id
+          // console.log(movieId)
+          if(!!movieId){
+            this.$http.get(`${movieUrl}/${movieId}`).then(res=>{
+              // console.dir(res.data)
+              if(!!res.data){
+                this.movie = res.data
+                setTimeout(()=>{
+                  document.querySelector('.movie-poster').src = this.movie.images.large
+                },0)
+                this.loadingData = false
+              }
+            }).catch(e=>{
+              console.log(e)
+            })
+          }
+        }).catch(e=>{
+          console.log(e)
         })
-        .catch(e => console.log(e))
+      }
     }
   }
-}
 </script>
 
 <style lang="css" scoped>
-a{
+ a{
   color: #03a9f4;
 }
 .loading{

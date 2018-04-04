@@ -10,6 +10,8 @@ const app = express()
 app.use('/',index)
 app.use('/api',movie)
 
+app.use(express.static('dist'))
+
 // app.use('/',(req, res)=>{
 //     res.send('ok')
 // })
